@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  email String
+  password String
+  name String
+  age Int
+  gender String
+  weight Float
+  height Float
+  emergency_contact String
+  prev_med_conditions String
+  have_surgery String
+  surgery_kind String?
+  have_allergy String
+  allergy String?
+  have_chronic_ill String
+  chronic_ill String?
+  medication String
+  date_diagnosis DateTime
+  date_treatment DateTime
+  treatment_along String
+  other_treatment String?
+  kidney_disease String
+  kidney_stage String
+  dialysis_type String
+  date_dialysis_start DateTime
+  dialysis_per_week Int
+  hours_per_session Int
+  dialysis_access String
+  center_treatment String
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+model Control {
+  id String @id @default(uuid())
+  user_id String 
+  date_last_dialysis String
+  have_symtomps_after_dial String
+  symtomps_after_dial String?
+  have_disease_after_dial String
+  disease_after_dial String?
+  syst_press Float
+  dias_press Float
+  oxi_sat Float
+  kt_v Float
+  urr Float
+  sodium Int
+  bun Float
+  creatinine Float
+  ferritin Int
+  iron_saturation Float
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
