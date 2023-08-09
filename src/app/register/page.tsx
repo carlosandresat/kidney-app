@@ -1,24 +1,99 @@
+"use client";
+
 import Link from "next/link";
 import SelectGroup from "@/components/SelectGroup";
+import { useState, useRef } from "react";
+import { createRegister } from "../actions";
 
 export default function Page() {
+  const [gender, setGender] = useState("");
+  const [have_surgery, setHave_surgery] = useState("");
+  const [have_allergy, setHave_allergy] = useState("");
+  const [have_chronic_ill, setHave_chronic_ill] = useState("");
+  const [treatment_along, setTreatment_along] = useState("");
+  const [kidney_disease, setKidney_disease] = useState("");
+  const [kidney_stage, setKidney_stage] = useState("");
+  const [dialysis_type, setDialysis_type] = useState("");
+  const [dialysis_access, setDialysis_access] = useState("");
+
+  const surgeryRef = useRef<HTMLInputElement>(null);
+  const allergyRef = useRef<HTMLInputElement>(null);
+  const chronicRef = useRef<HTMLInputElement>(null);
+  const treatmentRef = useRef<HTMLInputElement>(null);
+
+  const answerToBoolean = (answer: string) => {
+    if (answer === "yes") return true;
+    else return false;
+  };
+
+  const isLastOptionSelected = (answer: string, options: string[]) => {
+    if (answer === options[options.length - 1]) return true;
+    else return false;
+  };
+
+  const boolOptions = ["yes", "no"]
+  const genderOptions = ["female", "male", "other"]
+  const treatmentOptions = ["future transplant", "special medication", "other treatment"]
+  const kidneyDiseaseOptions = [
+    "Chronic Kidney Disease (CKD)",
+    "Acute Kidney Injury (AKI)",
+    "Polycystic Kidney Disease (PKD)",
+    "Glomerulonephritis",
+    "Kidney Stones",
+    "Urinary Tract Infections (UTIs)",
+    "Diabetic Nephropathy",
+    "Hypertensive Nephropathy",
+    "Interstitial Nephritis",
+    "Nephrotic Syndrome",
+    "Renal Artery Stenosis",
+    "Alport Syndrome",
+    "Lupus Nephritis",
+    "Amyloidosis",
+  ]
+  const kidneyStageOptions = [
+    "Stage 1: Kidney damage with normal or high GFR (GFR > 90 mL/min)",
+    "Stage 2: Mildly reduced GFR (GFR = 60-89 mL/min)",
+    "Stage 3: Moderately reduced GFR (GFR = 30-59 mL/min)",
+    "Stage 4: Severely reduced GFR (GFR = 15-29 mL/min)",
+    "Stage 5: End-stage renal disease (ESRD) (GFR < 15 mL/min)",
+  ]
+
+  //const cleanAnswer = (answerRef:object) => {
+  //  const element = answerRef.current;
+  //  element.value = ""
+  //}
+
   return (
     <>
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Register</h1>
         <Link
           className="border border-slate-300 text-slate-300 px-2 py-1 rounded hover:bg-slate-700 focus-within:bg-slate-700 outline-none"
-          href="/"
+          href=".."
         >
-          Logout
+          Back
         </Link>
       </header>
-      <form>
-      <h1 className="text-xl my-6">User Access</h1>
-      
-      <div className="grid md:grid-cols-2 md:gap-6">
-      <div className="relative z-0 w-full mb-6 group">
+      <form
+        action={(formData) =>
+          createRegister(
+            formData,
+            gender,
+            have_surgery,
+            have_allergy,
+            have_chronic_ill,
+            treatment_along,
+            kidney_disease,
+            kidney_stage,
+            dialysis_type,
+            dialysis_access
+          )
+        }
+      >
+        <h1 className="text-xl my-6">User Access</h1>
 
+        <div className="grid md:grid-cols-2 md:gap-6">
+          <div className="relative z-0 w-full mb-6 group">
             <input
               type="email"
               name="user_mail"
@@ -50,20 +125,20 @@ export default function Page() {
               Password
             </label>
           </div>
-</div>
+        </div>
 
         <h1 className="text-xl my-6">Personal Information</h1>
         <div className="relative z-0 w-full mb-6 group">
           <input
             type="text"
-            name="floating_name"
-            id="floating_name"
+            name="user_name"
+            id="user_name"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent className-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
           />
           <label
-            htmlFor="floating_name"
+            htmlFor="user_name"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Name
@@ -74,14 +149,14 @@ export default function Page() {
             <input
               type="number"
               min="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="age"
+              id="age"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="age"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Age
@@ -89,31 +164,34 @@ export default function Page() {
           </div>
           <div className="relative z-0 w-full mb-6 group">
             <label
-              htmlFor="floating_company"
+              htmlFor="gender"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               Gender
             </label>
             <SelectGroup
+              answer={gender}
+              setAnswer={setGender}
               orientation="row"
               options={["female", "male", "other"]}
             ></SelectGroup>
           </div>
         </div>
+
         <div className="grid md:grid-cols-2 md:gap-6">
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="number"
               min="0"
               step="0.01"
-              name="floating_phone"
-              id="floating_phone"
+              name="weight"
+              id="weight"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="weight"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Weight (kg)
@@ -124,50 +202,50 @@ export default function Page() {
               type="number"
               min="0"
               step="0.01"
-              name="floating_phone"
-              id="floating_phone"
+              name="height"
+              id="height"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="height"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Height (m)
             </label>
           </div>
         </div>
-
         <div className="relative z-0 w-full mb-6 group">
           <input
             type="tel"
-            pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-            name="floating_phone"
-            id="floating_phone"
+            pattern="([+][0-9]{2})?[0-9]{10}"
+            name="emergency_contact"
+            id="emergency_contact"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
           />
           <label
-            htmlFor="floating_phone"
+            htmlFor="emergency_contact"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Emergency contact (Phone)
           </label>
         </div>
+
         <h1 className="text-xl my-6">Medical History</h1>
         <div className="relative z-0 w-full mb-6 group">
           <input
             type="text"
-            name="floating_phone"
-            id="floating_phone"
+            name="prev_med_conditions"
+            id="prev_med_conditions"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
           />
           <label
-            htmlFor="floating_phone"
+            htmlFor="prev_med_conditions"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Previous medical conditions
@@ -176,61 +254,68 @@ export default function Page() {
         <div className="grid md:grid-cols-2 md:gap-6">
           <div className="relative z-0 w-full mb-6 group flex items-center justify-between">
             <label
-              htmlFor="floating_company"
+              htmlFor="have_surgery"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-0 scale-100 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               Does the patient has a previous surgical history/ Have you had any
               surgery before?
             </label>
             <SelectGroup
+              answerRef={surgeryRef}
+              answer={have_surgery}
+              setAnswer={setHave_surgery}
               orientation="row"
               options={["yes", "no"]}
             ></SelectGroup>
           </div>
-          <div className="relative z-0 w-full mb-6 group">
+          <div className={`relative z-0 w-full mb-6 group ${have_surgery === "yes" ? "":"invisible"}`} >
             <input
+              ref={surgeryRef}
               type="text"
-              min="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="surgery_kind"
+              id="surgery_kind"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              disabled={!answerToBoolean(have_surgery)}
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="surgery_kind"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               What kind of Surgery?
             </label>
           </div>
         </div>
+
         <div className="grid md:grid-cols-2 md:gap-6">
           <div className="relative z-0 w-full mb-6 group flex items-center justify-between">
             <label
-              htmlFor="floating_company"
+              htmlFor="have_allergy"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-0 scale-100 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               Does the patient have any allergy?
             </label>
             <SelectGroup
+              answerRef={allergyRef}
+              answer={have_allergy}
+              setAnswer={setHave_allergy}
               orientation="row"
               options={["yes", "no"]}
             ></SelectGroup>
           </div>
-          <div className="relative z-0 w-full mb-6 group">
+          <div className={`relative z-0 w-full mb-6 group ${have_allergy === "yes" ? "":"invisible"}`}>
             <input
+              ref={allergyRef}
               type="text"
-              min="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="allergy"
+              id="allergy"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              disabled={!answerToBoolean(have_allergy)}
             />
             <label
-              htmlFor="floating_phone"
-              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+              htmlFor="allergy"
+              className={`peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6`}
             >
               What allergies does the patient have?
             </label>
@@ -240,48 +325,51 @@ export default function Page() {
         <div className="grid md:grid-cols-2 md:gap-6 ">
           <div className="relative z-0 w-full mb-6 group flex items-center justify-between">
             <label
-              htmlFor="floating_company"
+              htmlFor="have_chronic_ill"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-0 scale-100 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               Does the patient has any chronic illnesses:
             </label>
             <div className="flex justify-center my-2">
               <SelectGroup
+                answerRef={chronicRef}
+                answer={have_chronic_ill}
+                setAnswer={setHave_chronic_ill}
                 orientation="row"
                 options={["yes", "no"]}
               ></SelectGroup>
             </div>
           </div>
-          <div className="relative z-0 w-full mb-6 group">
+          <div className={`relative z-0 w-full mb-6 group ${have_chronic_ill === "yes" ? "":"invisible"}`}>
             <input
+              ref={chronicRef}
               type="text"
-              min="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="chronic_ill"
+              id="chronic_ill"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              disabled={!answerToBoolean(have_chronic_ill)}
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="chronic_ill"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               What illnesses the patient has?
             </label>
           </div>
         </div>
-
+        
         <div className="relative z-0 w-full mb-6 group">
           <input
             type="text"
-            name="floating_phone"
-            id="floating_phone"
+            name="medication"
+            id="medication"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             required
           />
           <label
-            htmlFor="floating_phone"
+            htmlFor="medication"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Medications currently being taken
@@ -294,14 +382,14 @@ export default function Page() {
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="date"
-              name="floating_phone"
-              id="floating_phone"
+              name="date_diagnosis"
+              id="date_diagnosis"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="date_diagnosis"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-10 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-10"
             >
               Date of diagnosis (When did the patient found out they needed
@@ -311,14 +399,14 @@ export default function Page() {
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="date"
-              name="floating_phone"
-              id="floating_phone"
+              name="date_treatment"
+              id="date_treatment"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="date_treatment"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-10 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-10"
             >
               Beginning of treatment (When did the patient begin treatment?)
@@ -329,7 +417,7 @@ export default function Page() {
         <div className="grid md:grid-cols-2 md:gap-6 ">
           <div className="relative z-0 w-full mb-6 group">
             <label
-              htmlFor="floating_company"
+              htmlFor="treatment_along"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               Type of treatment besides Dyalisis: the patient has been
@@ -337,27 +425,26 @@ export default function Page() {
             </label>
             <div className="flex justify-center my-2">
               <SelectGroup
+                answerRef={treatmentRef}
+                answer={treatment_along}
+                setAnswer={setTreatment_along}
                 orientation="col"
-                options={[
-                  "future transplant",
-                  "special medication",
-                  "other treatment",
-                ]}
+                options={treatmentOptions}
               ></SelectGroup>
             </div>
           </div>
-          <div className="relative z-0 w-full mb-6 group">
+          <div className={`relative z-0 w-full mb-6 group ${treatment_along === "other treatment" ? "":"invisible"}`}>
             <input
+              ref={treatmentRef}
               type="text"
-              min="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="other_treatment"
+              id="other_treatment"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
+              disabled={!isLastOptionSelected(treatment_along, treatmentOptions)}
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="other_treatment"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Specify treatment
@@ -367,7 +454,7 @@ export default function Page() {
 
         <div className="relative z-0 w-full mb-6 group">
           <label
-            htmlFor="floating_company"
+            htmlFor="kidney_disease"
             className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
           >
             What is the cause/type of kidney disease diagnosed? Choose among the
@@ -375,23 +462,10 @@ export default function Page() {
           </label>
           <div className="flex justify-center my-2">
             <SelectGroup
+              answer={kidney_disease}
+              setAnswer={setKidney_disease}
               orientation="col"
-              options={[
-                "Chronic Kidney Disease (CKD)",
-                "Acute Kidney Injury (AKI)",
-                "Polycystic Kidney Disease (PKD)",
-                "Glomerulonephritis",
-                "Kidney Stones",
-                "Urinary Tract Infections (UTIs)",
-                "Diabetic Nephropathy",
-                "Hypertensive Nephropathy",
-                "Interstitial Nephritis",
-                "Nephrotic Syndrome",
-                "Renal Artery Stenosis",
-                "Alport Syndrome",
-                "Lupus Nephritis",
-                "Amyloidosis",
-              ]}
+              options={kidneyDiseaseOptions}
             ></SelectGroup>
           </div>
         </div>
@@ -405,14 +479,10 @@ export default function Page() {
           </label>
           <div className="flex justify-center my-2">
             <SelectGroup
+              answer={kidney_stage}
+              setAnswer={setKidney_stage}
               orientation="col"
-              options={[
-                "Stage 1: Kidney damage with normal or high GFR (GFR > 90 mL/min)",
-                "Stage 2: Mildly reduced GFR (GFR = 60-89 mL/min)",
-                "Stage 3: Moderately reduced GFR (GFR = 30-59 mL/min)",
-                "Stage 4: Severely reduced GFR (GFR = 15-29 mL/min)",
-                "Stage 5: End-stage renal disease (ESRD) (GFR < 15 mL/min)",
-              ]}
+              options={kidneyStageOptions}
             ></SelectGroup>
           </div>
         </div>
@@ -420,12 +490,14 @@ export default function Page() {
         <div className="grid md:grid-cols-2 md:gap-6 items-center">
           <div className="relative z-0 w-full mb-6 group flex items-center">
             <label
-              htmlFor="floating_company"
+              htmlFor="dialysis_type"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-0 scale-100 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               What type of Dialysis Treatment has been prescribed
             </label>
             <SelectGroup
+              answer={dialysis_type}
+              setAnswer={setDialysis_type}
               orientation="row"
               options={["hemodialysis", "peritoneal dialysis"]}
             ></SelectGroup>
@@ -433,14 +505,14 @@ export default function Page() {
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="date"
-              name="floating_phone"
-              id="floating_phone"
+              name="date_dialysis_start"
+              id="date_dialysis_start"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="date_dialysis_start"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               When did the dialysis treatment started?
@@ -455,14 +527,14 @@ export default function Page() {
               type="number"
               min="1"
               step="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="dialysis_per_week"
+              id="dialysis_per_week"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 focus:py-2.5 placeholder-shown:py-5 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="dialysis_per_week"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-10 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-10"
             >
               How many times per week the dialysis treatment has been
@@ -474,30 +546,33 @@ export default function Page() {
               type="number"
               min="0"
               step="1"
-              name="floating_phone"
-              id="floating_phone"
+              name="hours_per_session"
+              id="hours_per_session"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 focus:py-2.5 placeholder-shown:py-5 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="hours_per_session"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               How long do sessions often last? (hours)
             </label>
           </div>
         </div>
+        
         <div className="grid md:grid-cols-2 md:gap-6 mt-4">
           <div className="relative z-0 w-full mb-6 group">
             <label
-              htmlFor="floating_company"
+              htmlFor="dialysis_access"
               className="text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 mr-4"
             >
               Dialysis access type
             </label>
             <div className="flex justify-center my-2">
               <SelectGroup
+                answer={dialysis_access}
+                setAnswer={setDialysis_access}
                 orientation={"col"}
                 options={[
                   "Arteriovenous Fistula (AVF)",
@@ -511,14 +586,14 @@ export default function Page() {
           <div className="relative z-0 w-full mb-6 group">
             <input
               type="text"
-              name="floating_phone"
-              id="floating_phone"
+              name="center_treatment"
+              id="center_treatment"
               className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 focus:py-2.5 placeholder-shown:py-5 peer"
               placeholder=" "
               required
             />
             <label
-              htmlFor="floating_phone"
+              htmlFor="center_treatment"
               className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-10 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-10"
             >
               Dialysis center or healthcare facility where treatment is received
